@@ -35,7 +35,6 @@ export default function BookmarkList({ userId }: { userId: string }) {
 
         fetchBookmarks();
 
-        // Subscribe to real-time changes
         const channel = supabase
             .channel('schema-db-changes')
             .on(
