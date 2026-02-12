@@ -1,12 +1,10 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url);
-    const code = searchParams.get('code');
-    // if "next" is in search params, use it as the redirection URL
-    const next = searchParams.get('next') ?? '/';
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
 
     if (code) {
         const cookieStore = await cookies();
@@ -32,12 +30,9 @@ export async function GET(request: Request) {
                 },
             }
         );
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) {
-            return NextResponse.redirect(`${origin}${next}`);
-        }
+
+        await supabase.auth.exchangeCodeForSession(code);
     }
 
-    // return the user to an error page with instructions
-    return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+    return NextResponse.redirect("http://localhost:3000");
 }
